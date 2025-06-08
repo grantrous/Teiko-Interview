@@ -14,3 +14,4 @@ def validate_data(data):
 
 def convert_to_dict(data):
     return data.to_dict(orient='records')
+
