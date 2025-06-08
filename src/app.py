@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 from db import initialize_db, load_data, process_and_load_data, remove_sample, add_sample
-from analysis import display_frequency_analysis, compare_treatments, compare_conditions
+from analysis import (display_frequency_analysis, compare_treatments, compare_conditions, 
+                     analyze_treatment_response_prediction, analyze_baseline_subset, 
+                     create_custom_filter_interface)
 import os
 
 def main():
@@ -68,15 +70,32 @@ def main():
             
             st.dataframe(filtered_data, use_container_width=True)
             
-            # Data Analysis Section - moved to analysis.py
-            display_frequency_analysis(filtered_data)
+            # Analysis tabs for better organization
+            analysis_tab1, analysis_tab2, analysis_tab3, analysis_tab4 = st.tabs([
+                "📊 Frequency Analysis", 
+                "🎯 Treatment Response", 
+                "🔬 Baseline Analysis",
+                "🔧 Custom Filtering"
+            ])
             
-            # Additional Analysis Sections
-            if len(db_data['treatment'].unique()) > 1:
-                compare_treatments(filtered_data)
+            with analysis_tab1:
+                display_frequency_analysis(filtered_data)
+                
+                # Additional comparison analyses
+                if len(db_data['treatment'].unique()) > 1:
+                    compare_treatments(filtered_data)
+                
+                if len(db_data['condition'].unique()) > 1:
+                    compare_conditions(filtered_data)
             
-            if len(db_data['condition'].unique()) > 1:
-                compare_conditions(filtered_data)
+            with analysis_tab2:
+                analyze_treatment_response_prediction(db_data)
+            
+            with analysis_tab3:
+                analyze_baseline_subset(db_data)
+            
+            with analysis_tab4:
+                create_custom_filter_interface(db_data)
             
             # Sample management section
             st.header("🔧 Sample Management")
