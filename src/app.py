@@ -9,6 +9,7 @@ import os
 def main():
     st.title("CSV Database App")
     st.markdown("### Clinical Trial Data Management System")
+    st.markdown("*Designed for Bob Loblaw's Clinical Research Needs*")
     
     # Initialize session state
     if 'data_loaded' not in st.session_state:
@@ -111,35 +112,96 @@ def main():
         
         st.dataframe(filtered_data, use_container_width=True)
         
-        # Analysis tabs for better organization
+        # Bob's Research Questions - Organized by Priority
+        st.header("🔬 Bob's Research Analysis")
+        st.markdown("*Addressing specific research questions in order of priority*")
+        
+        # Analysis tabs with numbered Bob's requests
         analysis_tab1, analysis_tab2, analysis_tab3, analysis_tab4 = st.tabs([
-            "📊 Frequency Analysis", 
-            "🎯 Treatment Response", 
-            "🔬 Baseline Analysis",
-            "🔧 Custom Filtering"
+            "❶ Cell Type Frequencies", 
+            "❷ Treatment Response Prediction", 
+            "❸ Baseline Treatment Effects",
+            "❹ Custom Data Exploration"
         ])
         
         with analysis_tab1:
+            st.markdown("## 📊 Bob's Request #1: Cell Type Frequency Analysis")
+            st.markdown("""
+            **Research Question:** *"What is the frequency of each cell type in each sample?"*
+            
+            **Objective:** Generate a summary table of relative frequencies for each cell population in every sample.
+            
+            **Output Requirements:**
+            - Calculate total cell count per sample (sum across all five populations)
+            - Compute relative frequency as percentage of total
+            - Create table with columns: sample, total_count, population, count, percentage
+            """)
+            
             display_frequency_analysis(filtered_data)
             
             # Additional comparison analyses
             if len(db_data['treatment'].unique()) > 1:
+                st.markdown("### 📈 Additional Treatment Comparisons")
                 compare_treatments(filtered_data)
             
             if len(db_data['condition'].unique()) > 1:
+                st.markdown("### 📈 Additional Condition Comparisons")
                 compare_conditions(filtered_data)
         
         with analysis_tab2:
+            st.markdown("## 🎯 Bob's Request #2: Treatment Response Prediction")
+            st.markdown("""
+            **Research Question:** *"Can we predict treatment response for tr1 in melanoma patients?"*
+            
+            **Objective:** Compare cell population relative frequencies between responders and non-responders to identify biomarkers.
+            
+            **Specific Requirements:**
+            - Focus on melanoma patients receiving tr1 treatment
+            - Include only PBMC (blood) samples
+            - Compare responders (y) vs non-responders (n)
+            - Use boxplots for visualization
+            - Provide statistical significance testing
+            - Generate evidence to convince Yah D'yada
+            """)
+            
             analyze_treatment_response_prediction(db_data)
         
         with analysis_tab3:
+            st.markdown("## 🔬 Bob's Request #3: Baseline Treatment Effects Analysis")
+            st.markdown("""
+            **Research Question:** *"What are the baseline characteristics before treatment effects emerge?"*
+            
+            **Objective:** Explore specific data subsets to understand early treatment effects.
+            
+            **Specific Requirements:**
+            - Identify melanoma PBMC samples at baseline (time_from_treatment_start = 0)
+            - Focus on patients receiving tr1 treatment
+            - Determine sample counts per project
+            - Count responders vs non-responders by subject
+            - Analyze male vs female distribution
+            """)
+            
             analyze_baseline_subset(db_data)
         
         with analysis_tab4:
+            st.markdown("## 🔧 Bob's Request #4: Flexible Data Exploration")
+            st.markdown("""
+            **Research Question:** *"How can I explore any subset of data as the trial progresses?"*
+            
+            **Objective:** Provide flexible filtering and querying capabilities for ongoing research needs.
+            
+            **Features:**
+            - Custom filters for any data combination
+            - Real-time subset analysis
+            - Automated summary statistics
+            - Downloadable results for collaboration
+            """)
+            
             create_custom_filter_interface(db_data)
         
         # Sample management section
         st.header("🔧 Sample Management")
+        st.markdown("*Add or remove individual samples as the study progresses*")
         
         tab1, tab2 = st.tabs(["Remove Sample", "Add Sample"])
         
