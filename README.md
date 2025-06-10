@@ -21,8 +21,7 @@ Hi Bob Loblaw! I hope this Python program helps you and Yah D'yada quickly analy
 
 4. **Start the program:**
    ```bash
-   cd src
-   streamlit run app.py
+   streamlit run src/app.py
    ```
 5. **Open your browser** - it should automatically open to `http://localhost:8501`
 6. **Upload your CSV** and click "Load Data into Database"
