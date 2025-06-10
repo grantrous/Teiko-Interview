@@ -36,9 +36,117 @@ A comprehensive Python application for managing and analyzing clinical trial dat
    - Open your web browser and go to `http://localhost:8501`
    - The application will start with an empty database
 
+## 📄 CSV Data Format Requirements
+
+### Required Column Headers
+
+Your CSV file **must** contain the following columns with exact header names:
+
+```csv
+sample,project,subject,age,sex,condition,treatment,sample_type,time_from_treatment_start,response,b_cell,cd8_t_cell,cd4_t_cell,nk_cell,monocyte
+```
+
+### Column Specifications
+
+| Column | Data Type | Description | Example Values | Required |
+|--------|-----------|-------------|----------------|----------|
+| `sample` | TEXT | Unique sample identifier | "SAMPLE_00001", "MEL_001_T0" | ✅ |
+| `project` | TEXT | Project/study identifier | "MELANO_001", "IMMUNO_BOOST" | ✅ |
+| `subject` | TEXT | Unique subject/patient identifier | "SUB_001", "PATIENT_123" | ✅ |
+| `age` | INTEGER | Subject age in years | 45, 67, 23 | ✅ |
+| `sex` | TEXT | Subject biological sex | "M", "F" | ✅ |
+| `condition` | TEXT | Medical condition/diagnosis | "melanoma", "healthy", "lung_cancer" | ✅ |
+| `treatment` | TEXT | Treatment received | "tr1", "tr2", "placebo" | ✅ |
+| `sample_type` | TEXT | Type of biological sample | "PBMC", "tumor", "serum" | ✅ |
+| `time_from_treatment_start` | INTEGER | Days since treatment began | 0, 7, 28, 84 | ✅ |
+| `response` | TEXT | Treatment response status | "y" (responder), "n" (non-responder), "" (unknown) | ⚠️ Optional |
+| `b_cell` | INTEGER | B cell count | 500, 1200, 800 | ✅ |
+| `cd8_t_cell` | INTEGER | CD8+ T cell count | 1500, 2800, 1200 | ✅ |
+| `cd4_t_cell` | INTEGER | CD4+ T cell count | 2000, 3500, 1800 | ✅ |
+| `nk_cell` | INTEGER | Natural killer cell count | 800, 1500, 600 | ✅ |
+| `monocyte` | INTEGER | Monocyte count | 1000, 2000, 1200 | ✅ |
+
+### Sample CSV Format
+
+```csv
+sample,project,subject,age,sex,condition,treatment,sample_type,time_from_treatment_start,response,b_cell,cd8_t_cell,cd4_t_cell,nk_cell,monocyte
+SAMPLE_00001,MELANO_001,SUB_001,45,M,melanoma,tr1,PBMC,0,y,800,2200,2800,1000,1500
+SAMPLE_00002,MELANO_001,SUB_001,45,M,melanoma,tr1,PBMC,28,y,750,2500,3200,1200,1400
+SAMPLE_00003,MELANO_001,SUB_002,52,F,melanoma,tr1,PBMC,0,n,600,1800,2400,800,1300
+SAMPLE_00004,IMMUNO_BOOST,SUB_003,38,F,healthy,placebo,PBMC,0,,700,1500,2200,600,1100
+```
+
+### Data Validation Rules
+
+#### Required Data Integrity
+- **Unique Samples**: Each `sample` value must be unique across the entire dataset
+- **Consistent Subjects**: Same `subject` should have consistent `age`, `sex`, and `condition` across all their samples
+- **Positive Counts**: All cell count columns must contain non-negative integers
+- **Valid Response Values**: `response` column accepts only "y", "n", or empty string ""
+
+#### Recommended Practices
+- **Time Points**: Use consistent time intervals (e.g., 0, 7, 14, 28, 56, 84, 168 days)
+- **Naming Conventions**: Use consistent, descriptive naming for projects and subjects
+- **Baseline Inclusion**: Include baseline samples (`time_from_treatment_start = 0`) for longitudinal analysis
+
+### Example Data Scenarios
+
+#### Longitudinal Study
+```csv
+sample,project,subject,age,sex,condition,treatment,sample_type,time_from_treatment_start,response,b_cell,cd8_t_cell,cd4_t_cell,nk_cell,monocyte
+BASE_001,MELANO_001,PATIENT_001,45,M,melanoma,tr1,PBMC,0,y,800,2200,2800,1000,1500
+WEEK4_001,MELANO_001,PATIENT_001,45,M,melanoma,tr1,PBMC,28,y,750,2500,3200,1200,1400
+WEEK12_001,MELANO_001,PATIENT_001,45,M,melanoma,tr1,PBMC,84,y,700,2800,3500,1400,1300
+```
+
+#### Multi-Project Study
+```csv
+sample,project,subject,age,sex,condition,treatment,sample_type,time_from_treatment_start,response,b_cell,cd8_t_cell,cd4_t_cell,nk_cell,monocyte
+MEL001_S001,MELANO_001,SUB_001,45,M,melanoma,tr1,PBMC,0,y,800,2200,2800,1000,1500
+IMM001_S001,IMMUNO_BOOST,SUB_002,52,F,lung_cancer,tr2,PBMC,0,n,600,1800,2400,800,1300
+BIO001_S001,BIOMARKER_STUDY,SUB_003,38,F,healthy,placebo,PBMC,0,,700,1500,2200,600,1100
+```
+
+### Common CSV Issues to Avoid
+
+❌ **Don't do this:**
+- Missing required columns
+- Inconsistent column names (e.g., "cd8_tcell" instead of "cd8_t_cell")
+- Negative cell counts
+- Invalid response values (e.g., "yes" instead of "y")
+- Duplicate sample IDs
+- Missing data in required fields
+
+✅ **Do this:**
+- Follow exact column naming conventions
+- Ensure all required columns are present
+- Use consistent data formats
+- Include baseline samples for treatment studies
+- Validate data before upload
+
+### Testing Your CSV
+
+Before uploading, verify your CSV:
+
+1. **Column Check**: Ensure all 15 required columns are present with exact names
+2. **Data Types**: Verify integers for age, time, and cell counts
+3. **Required Fields**: Check no empty values in required columns
+4. **Unique Samples**: Confirm each sample ID appears only once
+5. **Response Values**: Verify only "y", "n", or "" in response column
+
+### Generating Test Data
+
+Use the included data generator for testing:
+```bash
+python generate_big_dataset.py
+```
+This creates `big-cell-counts.csv` with 500+ realistic samples for testing application performance and features.
+
+## 🔬 Scientific Analysis Features
+
 ### Running the Analysis
 
-1. **Load Data**: Upload the `cell-count.csv` file using the file uploader
+1. **Load Data**: Upload your CSV file using the file uploader
 2. **Initialize Database**: Click "Load Data into Database" 
 3. **Explore Analysis Tabs**:
    - **Frequency Analysis**: Answers "What is the frequency of each cell type in each sample?"
@@ -158,7 +266,8 @@ streamlit-csv-db-app/
 │   ├── app.py              # Main Streamlit application
 │   ├── db.py               # Database operations and schema management
 │   ├── analysis.py         # All analytical functions and visualizations
-│   └── schema.sql          # Database schema definition
+│   ├── schema.sql          # Database schema definition
+│   └── generate_big_dataset.py  # Test data generator
 └── README.md
 ```
 
