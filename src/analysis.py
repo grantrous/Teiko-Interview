@@ -378,7 +378,7 @@ def create_custom_filter_interface(db_data):
     
     return filtered_data
 
-# ... rest of existing functions (display_frequency_analysis, analyze_treatment_response_prediction, etc.) ...
+
 def calculate_cell_frequencies(db_data):
     """Calculate relative frequencies of each cell type for each sample"""
     if db_data.empty:
